@@ -245,11 +245,6 @@ fun testConcurrentDiscountApplication() = runBlocking {
     // This proves concurrency safety at database level
 }
 ```
-## Simple Frontend UI 
-![alt text](Frontend_UI_1.png)
-
-![alt text](Frontend_UI_2.png)
-
 
 ## Production Considerations
 

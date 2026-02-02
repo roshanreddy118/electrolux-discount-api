@@ -1,5 +1,13 @@
 # 🧩 Country-Based Product API — Technical Assessment
 
+## 📦 Note
+Simple frontend has been implemented along with the Swagger integration
+  [Swagger UI](http://localhost:8082/swagger.html) | Interactive API documentation (when running) |
+
+![alt text](Frontend_UI_1.png)
+
+![alt text](Frontend_UI_2.png)
+
 Build a single Kotlin (Ktor) service that manages products and discounts.
 
 ## 📦 Problem Description
@@ -435,7 +443,7 @@ When you're done:
     - README.md
     - ARCHITECTURE.md (with diagrams)
 
-Then share the repository link (and live demo URL if deployed).
+Then share the repository link (https://github.com/roshanreddy118/electrolux-discount-api).
 ---
 ✨ **Good luck, and have fun!**
 ---
