@@ -2,8 +2,11 @@
 
 ## 📦 Note
 Simple frontend has been implemented along with the Swagger integration
-  [Swagger UI](http://localhost:8082/swagger.html) | Interactive API documentation (when running) |
 
+Swagger URL - http://localhost:8082/swagger.html
+![alt text](Swagger_1.png)
+
+Frontend URL- http://localhost:8082
 ![alt text](Frontend_UI_1.png)
 
 ![alt text](Frontend_UI_2.png)
