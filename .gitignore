@@ -21,6 +21,10 @@ yarn-error.log*
 *.swp
 *.swo
 
+# Editor history and local history files
+.history/
+.lh/
+
 # OS generated files
 .DS_Store
 .DS_Store?
