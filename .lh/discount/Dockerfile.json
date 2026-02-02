@@ -1,0 +1,22 @@
+{
+    "sourceFile": "discount/Dockerfile",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1769775279616,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1769776120942,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,13 +1,14 @@\n FROM openjdk:22-jdk-slim\n \n WORKDIR /app\n \n-# Copy gradle files\n-COPY build.gradle.kts settings.gradle.kts gradlew ./\n+# Copy gradle wrapper and properties (these are in the discount folder)\n+COPY gradlew gradle.properties ./\n COPY gradle ./gradle\n \n-# Copy source code\n+# Copy build files (these are in the discount folder root and app subfolder)\n+COPY settings.gradle.kts ./\n COPY app ./app\n \n # Make gradlew executable\n RUN chmod +x ./gradlew\n"
+                }
+            ],
+            "date": 1769775279616,
+            "name": "Commit-0",
+            "content": "FROM openjdk:22-jdk-slim\n\nWORKDIR /app\n\n# Copy gradle files\nCOPY build.gradle.kts settings.gradle.kts gradlew ./\nCOPY gradle ./gradle\n\n# Copy source code\nCOPY app ./app\n\n# Make gradlew executable\nRUN chmod +x ./gradlew\n\n# Build the application\nRUN ./gradlew build --no-daemon\n\n# Expose port\nEXPOSE 8082\n\n# Run the application\nCMD [\"./gradlew\", \"run\", \"--no-daemon\"]"
+        }
+    ]
+}

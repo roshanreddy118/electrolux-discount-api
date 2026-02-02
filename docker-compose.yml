@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: discount-postgres
+    environment:
+      POSTGRES_DB: discount_db
+      POSTGRES_USER: discount_user
+      POSTGRES_PASSWORD: discount_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U discount_user -d discount_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: 
+      context: ./discount
+      dockerfile: Dockerfile
+    container_name: discount-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/discount_db
+      DATABASE_USERNAME: discount_user
+      DATABASE_PASSWORD: discount_pass
+      SERVER_PORT: 8082
+      SERVER_HOST: 0.0.0.0
+    ports:
+      - "8082:8082"
+
+volumes:
+  postgres_data:

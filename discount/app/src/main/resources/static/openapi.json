@@ -1,0 +1,346 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Discount API - Electrolux Technical Assessment",
+    "description": "REST API for managing product discounts with VAT calculation support for European countries (Sweden, Germany, France). Features include compound discount calculation, idempotent discount application, and concurrent request handling.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Roshan Reddy",
+      "email": "roshan.reddy@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8082",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Returns the health status of the API and database connection",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    },
+                    "database": {
+                      "type": "object",
+                      "properties": {
+                        "connected": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "PostgreSQL"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "summary": "Get Products by Country",
+        "description": "Retrieves all products for a specified country with calculated final prices including VAT and any applied discounts",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "country",
+            "in": "query",
+            "required": true,
+            "description": "Country name (supported: Sweden, Germany, France)",
+            "schema": {
+              "type": "string",
+              "enum": ["Sweden", "Germany", "France"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products with calculated prices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductResponse"
+                  }
+                },
+                "example": [
+                  {
+                    "id": "laptop-se",
+                    "name": "Gaming Laptop",
+                    "basePrice": 1000.0,
+                    "country": "Sweden",
+                    "discounts": [],
+                    "finalPrice": 1250.0
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or missing country parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Country parameter is required"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{productId}/discount": {
+      "put": {
+        "summary": "Apply Discount to Product",
+        "description": "Applies a discount to a specific product. This operation is idempotent - applying the same discount twice will not duplicate it. Supports concurrent requests safely.",
+        "tags": ["Discounts"],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the product",
+            "schema": {
+              "type": "string"
+            },
+            "example": "laptop-se"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyDiscountRequest"
+              },
+              "example": {
+                "discountId": "SUMMER_SALE",
+                "percent": 15.0
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Discount applied or already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplyDiscountResponse"
+                },
+                "examples": {
+                  "newDiscount": {
+                    "summary": "Discount applied successfully",
+                    "value": {
+                      "message": "Discount applied successfully",
+                      "product": {
+                        "id": "laptop-se",
+                        "name": "Gaming Laptop",
+                        "basePrice": 1000.0,
+                        "country": "Sweden",
+                        "discounts": [
+                          {
+                            "discountId": "SUMMER_SALE",
+                            "percent": 15.0
+                          }
+                        ],
+                        "finalPrice": 1062.5
+                      }
+                    }
+                  },
+                  "existingDiscount": {
+                    "summary": "Discount already applied (idempotent)",
+                    "value": {
+                      "message": "Discount already applied",
+                      "product": {
+                        "id": "laptop-se",
+                        "name": "Gaming Laptop",
+                        "basePrice": 1000.0,
+                        "country": "Sweden",
+                        "discounts": [
+                          {
+                            "discountId": "SUMMER_SALE",
+                            "percent": 15.0
+                          }
+                        ],
+                        "finalPrice": 1062.5
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid discount parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "invalidPercent": {
+                    "summary": "Invalid discount percentage",
+                    "value": {
+                      "error": "Discount percent must be between 0 (exclusive) and 100 (inclusive)"
+                    }
+                  },
+                  "emptyId": {
+                    "summary": "Empty discount ID",
+                    "value": {
+                      "error": "Discount ID cannot be empty"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Product not found: invalid-product-id"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProductResponse": {
+        "type": "object",
+        "required": ["id", "name", "basePrice", "country", "discounts", "finalPrice"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique product identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Product name"
+          },
+          "basePrice": {
+            "type": "number",
+            "format": "double",
+            "description": "Base price before discounts and VAT"
+          },
+          "country": {
+            "type": "string",
+            "description": "Country for VAT calculation"
+          },
+          "discounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Discount"
+            },
+            "description": "List of applied discounts"
+          },
+          "finalPrice": {
+            "type": "number",
+            "format": "double",
+            "description": "Final price after discounts and VAT"
+          }
+        }
+      },
+      "Discount": {
+        "type": "object",
+        "required": ["discountId", "percent"],
+        "properties": {
+          "discountId": {
+            "type": "string",
+            "description": "Unique identifier for the discount"
+          },
+          "percent": {
+            "type": "number",
+            "format": "double",
+            "description": "Discount percentage (0-100)"
+          }
+        }
+      },
+      "ApplyDiscountRequest": {
+        "type": "object",
+        "required": ["discountId", "percent"],
+        "properties": {
+          "discountId": {
+            "type": "string",
+            "description": "Unique identifier for the discount (e.g., SUMMER_SALE, LOYALTY_BONUS)",
+            "minLength": 1
+          },
+          "percent": {
+            "type": "number",
+            "format": "double",
+            "description": "Discount percentage (must be > 0 and <= 100)",
+            "minimum": 0.01,
+            "maximum": 100
+          }
+        }
+      },
+      "ApplyDiscountResponse": {
+        "type": "object",
+        "required": ["message", "product"],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Result message",
+            "enum": ["Discount applied successfully", "Discount already applied"]
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductResponse"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "API health monitoring endpoints"
+    },
+    {
+      "name": "Products",
+      "description": "Product retrieval with pricing"
+    },
+    {
+      "name": "Discounts",
+      "description": "Discount management operations"
+    }
+  ]
+}

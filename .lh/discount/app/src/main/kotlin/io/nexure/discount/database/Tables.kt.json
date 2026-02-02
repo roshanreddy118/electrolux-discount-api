@@ -1,0 +1,18 @@
+{
+    "sourceFile": "discount/app/src/main/kotlin/io/nexure/discount/database/Tables.kt",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1769775281706,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1769775281706,
+            "name": "Commit-0",
+            "content": "package io.nexure.discount.database\n\nimport org.jetbrains.exposed.sql.Table\n\n/**\n * Products table definition using Exposed ORM\n * Stores the core product information\n */\nobject Products : Table(\"products\") {\n    val id = varchar(\"id\", 50) // Primary key\n    val name = varchar(\"name\", 200) // Product name\n    val basePrice = decimal(\"base_price\", 10, 2) // Price with 2 decimal places\n    val country = varchar(\"country\", 50) // Country for VAT calculation\n    \n    override val primaryKey = PrimaryKey(id)\n}\n\n/**\n * Product discounts table definition using Exposed ORM\n * Stores individual discounts applied to products\n * Uses composite unique constraint to prevent duplicate discount applications\n */\nobject ProductDiscounts : Table(\"product_discounts\") {\n    val id = long(\"id\").autoIncrement() // Auto-generated primary key\n    val productId = varchar(\"product_id\", 50) references Products.id // Foreign key to products\n    val discountId = varchar(\"discount_id\", 50) // Discount identifier for idempotency\n    val percent = decimal(\"percent\", 5, 2) // Discount percentage with 2 decimal places\n    \n    override val primaryKey = PrimaryKey(id)\n    \n    // Unique constraint to ensure same discount cannot be applied twice to same product\n    // This is our main concurrency control mechanism at database level\n    init {\n        uniqueIndex(productId, discountId)\n    }\n}"
+        }
+    ]
+}

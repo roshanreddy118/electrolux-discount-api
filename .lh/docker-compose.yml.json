@@ -1,0 +1,18 @@
+{
+    "sourceFile": "docker-compose.yml",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1769775279407,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1769775279407,
+            "name": "Commit-0",
+            "content": "services:\n  postgres:\n    image: postgres:15-alpine\n    container_name: discount-postgres\n    environment:\n      POSTGRES_DB: discount_db\n      POSTGRES_USER: discount_user\n      POSTGRES_PASSWORD: discount_pass\n    ports:\n      - \"5432:5432\"\n    volumes:\n      - postgres_data:/var/lib/postgresql/data\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U discount_user -d discount_db\"]\n      interval: 5s\n      timeout: 5s\n      retries: 5\n\n  app:\n    build: \n      context: ./discount\n      dockerfile: Dockerfile\n    container_name: discount-app\n    depends_on:\n      postgres:\n        condition: service_healthy\n    environment:\n      DATABASE_URL: jdbc:postgresql://postgres:5432/discount_db\n      DATABASE_USERNAME: discount_user\n      DATABASE_PASSWORD: discount_pass\n      SERVER_PORT: 8082\n      SERVER_HOST: 0.0.0.0\n    ports:\n      - \"8082:8082\"\n\nvolumes:\n  postgres_data:"
+        }
+    ]
+}
