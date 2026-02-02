@@ -63,6 +63,8 @@ If multiple clients apply the same discount concurrently:
 - Calculate finalPrice including VAT and discounts.
 - Ensure the same discount cannot be applied more than once per product.
 - Demonstrate concurrency safety with a test that simulates multiple simultaneous discount requests via http endpoints.
+- Simple frontend has been implemented along with the Swagger integration
+  [Swagger UI](http://localhost:8082/swagger.html) | Interactive API documentation (when running) |
 
 ---
 
@@ -405,9 +407,6 @@ This test launches 10 simultaneous HTTP requests applying the same discount to v
 |----------|-------------|
 | [README.md](./README.md) | This file - overview and quick start |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System design, patterns, and sequence diagrams |
-| [DEPLOYMENT.md](./DEPLOYMENT.md) | Local deployment and operations guide |
-| [CLOUD_DEPLOYMENT_GUIDE.md](./CLOUD_DEPLOYMENT_GUIDE.md) | Deploy to Railway/Render/Fly.io |
-| [GITHUB_SUBMISSION_GUIDE.md](./GITHUB_SUBMISSION_GUIDE.md) | What to push & how to submit |
 | [Swagger UI](http://localhost:8082/swagger.html) | Interactive API documentation (when running) |
 | [OpenAPI Spec](http://localhost:8082/openapi.json) | OpenAPI 3.0 specification (when running) |
 
@@ -425,23 +424,13 @@ This test launches 10 simultaneous HTTP requests applying the same discount to v
     - At least one **Mermaid sequence diagram** for:
         - `GET /products` ✅
         - `PUT /products/{id}/discount` ✅
-4. **DEPLOYMENT.md** with:
-    - Production deployment options ✅
-    - Docker and Kubernetes configurations ✅
-    - Troubleshooting guide ✅
-5. **Swagger/OpenAPI Documentation** ✅
-6. **10 Comprehensive Tests** (all passing) ✅
 
 ---
 ## 📬 Submission
 
 When you're done:
-1. Push your solution to a **public GitHub repository**. 
-   - See [GITHUB_SUBMISSION_GUIDE.md](./GITHUB_SUBMISSION_GUIDE.md) for details
-2. Ensure we can build and run it locally.
-3. (Optional) Deploy to cloud for live demo
-   - See [CLOUD_DEPLOYMENT_GUIDE.md](./CLOUD_DEPLOYMENT_GUIDE.md) for Railway/Render/Fly.io
-4. Include:
+1. Ensure we can build and run it locally.
+2. Include:
     - Code
     - README.md
     - ARCHITECTURE.md (with diagrams)

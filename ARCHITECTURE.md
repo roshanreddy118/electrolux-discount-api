@@ -1,12 +1,5 @@
 # Architecture Documentation
 
-## Related Documentation
-- [README.md](./README.md) - Quick start and curl examples
-- [DEPLOYMENT.md](./DEPLOYMENT.md) - Local deployment guide
-- [CLOUD_DEPLOYMENT_GUIDE.md](./CLOUD_DEPLOYMENT_GUIDE.md) - Deploy to Railway/Render/Fly.io
-- [GITHUB_SUBMISSION_GUIDE.md](./GITHUB_SUBMISSION_GUIDE.md) - Submission instructions
-
----
 
 ## System Design Overview
 
